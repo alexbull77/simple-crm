@@ -71,3 +71,65 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+model Customer {
+    CustomerID  String    @id @default(cuid())
+    FirstName   String?
+    LastName    String?
+    Email       String?
+    PhoneNumber BigInt?
+    Address     String?
+    Contact     Contact[]
+    Sales       Sales[]
+}
+
+model Contact {
+    ContactID          String        @id @default(cuid())
+    CustomerID         String
+    ContactDate        DateTime      @default(now())
+    CustomerCustomerID Customer      @relation(fields: [CustomerID], references: [CustomerID], onDelete: Cascade)
+    ContactMethod      ContactMethod
+    Notes              String
+}
+
+model Products {
+    ProductID          String  @id @default(cuid())
+    ProductName        String
+    ProductDescription String
+    Price              Int
+    Sales              Sales[]
+}
+
+model Sales {
+    SaleID String @id @default(cuid())
+
+    SaleCustomerID Customer @relation(fields: [CustomerID], onDelete: Cascade, references: [CustomerID])
+    CustomerID     String
+
+    SaleProductID Products @relation(fields: [ProductID], onDelete: Cascade, references: [ProductID])
+    ProductID     String
+
+    DateOfSale DateTime @default(now())
+    Amount     Float
+}
+
+model Employees {
+    EmployeeID String  @id @default(cuid())
+    FirstName  String?
+    LastName   String?
+    Role       Role
+    Email      String
+}
+
+enum Role {
+    USER
+    ADMIN
+}
+
+enum ContactMethod {
+    EMAIL
+    PHONE
+    SMS
+    WHATSAPP
+    SOCIAL_MEDIA
+}
